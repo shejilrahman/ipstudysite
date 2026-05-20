@@ -388,38 +388,6 @@ export default function SubjectModal({ subject, onSave, onClose }: SubjectModalP
                   </span>
                   <button
                     type="button"
-                    onClick={async () => {
-                      if (!subject) {
-                        alert("Please save the subject first before logging revisions.");
-                        return;
-                      }
-                      const conf = window.prompt("Enter confidence level for this revision: low, medium, or high", "medium");
-                      if (conf && ["low", "medium", "high"].includes(conf.toLowerCase())) {
-                        const { addRevision } = await import("@/services/revisionService");
-                        await addRevision({
-                          topicId: topic.id,
-                          subjectId: subject.id,
-                          revisionDate: new Date().toISOString(),
-                          confidenceLevel: conf.toLowerCase() as "low"|"medium"|"high"
-                        });
-                        alert("Revision logged successfully!");
-                      }
-                    }}
-                    style={{
-                      background: "rgba(139, 92, 246, 0.2)",
-                      border: "1px solid rgba(139, 92, 246, 0.4)",
-                      cursor: "pointer",
-                      color: "#c4b5fd",
-                      fontSize: "11px",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Log Rev
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => removeTopic(topic.id)}
                     style={{
                       background: "none",

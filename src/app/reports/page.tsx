@@ -40,15 +40,6 @@ export default function ReportsPage() {
 
   const completedAims = aims.filter((a) => a.isCompleted).length;
   const completedTasks = tasks.filter((t) => t.isCompleted).length;
-  
-  let totalTopics = 0;
-  let completedTopics = 0;
-  subjects.forEach(sub => {
-    sub.topics.forEach(top => {
-      totalTopics++;
-      if (top.status === "completed") completedTopics++;
-    });
-  });
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 32px", fontFamily: "'Inter', sans-serif" }}>
@@ -58,20 +49,9 @@ export default function ReportsPage() {
       
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "24px", marginBottom: "40px" }}>
         
-        {/* Overall Completion */}
-        <div className="glass-card" style={{ padding: "24px", textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Syllabus Topics Completed</div>
-          <div style={{ fontSize: "36px", fontWeight: "800", color: "#38bdf8" }}>
-            {completedTopics} <span style={{ fontSize: "20px", color: "#64748b" }}>/ {totalTopics}</span>
-          </div>
-          <div style={{ marginTop: "12px", background: "rgba(255,255,255,0.1)", height: "6px", borderRadius: "3px", overflow: "hidden" }}>
-            <div style={{ background: "#38bdf8", height: "100%", width: totalTopics ? `${(completedTopics / totalTopics) * 100}%` : "0%" }} />
-          </div>
-        </div>
-
         {/* Aims Completion */}
         <div className="glass-card" style={{ padding: "24px", textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Aims Completed</div>
+          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Broad Aims Completed</div>
           <div style={{ fontSize: "36px", fontWeight: "800", color: "#8b5cf6" }}>
             {completedAims} <span style={{ fontSize: "20px", color: "#64748b" }}>/ {aims.length}</span>
           </div>
@@ -82,7 +62,7 @@ export default function ReportsPage() {
 
         {/* Tasks Completion */}
         <div className="glass-card" style={{ padding: "24px", textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Tasks Completed</div>
+          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Specific Tasks Completed</div>
           <div style={{ fontSize: "36px", fontWeight: "800", color: "#10b981" }}>
             {completedTasks} <span style={{ fontSize: "20px", color: "#64748b" }}>/ {tasks.length}</span>
           </div>
@@ -91,36 +71,78 @@ export default function ReportsPage() {
           </div>
         </div>
 
+        {/* Total Revisions */}
+        <div className="glass-card" style={{ padding: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", fontWeight: "600" }}>Total Revisions Logged</div>
+          <div style={{ fontSize: "36px", fontWeight: "800", color: "#38bdf8" }}>
+            {revisions.length}
+          </div>
+        </div>
       </div>
 
-      <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "20px", color: "#f1f5f9", fontFamily: "'Outfit', sans-serif" }}>Recent Revisions</h2>
-      {revisions.length === 0 ? (
-        <div style={{ color: "#64748b" }}>No revisions logged yet. Revise a topic and mark it from the syllabus page.</div>
+      <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "20px", color: "#f1f5f9", fontFamily: "'Outfit', sans-serif" }}>Task & Revision Tracking</h2>
+      
+      {tasks.length === 0 ? (
+        <div style={{ color: "#64748b" }}>No tasks added yet. Head to the Tasks page to start tracking!</div>
       ) : (
-        <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-          {revisions.slice(0, 10).map((rev) => {
-            const subject = subjects.find(s => s.id === rev.subjectId);
-            const topic = subject?.topics.find(t => t.id === rev.topicId);
-            return (
-              <div key={rev.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", background: "rgba(255,255,255,0.03)", borderRadius: "8px" }}>
-                <div>
-                  <div style={{ fontWeight: "600", color: "#f8fafc" }}>{topic?.name || "Unknown Topic"}</div>
-                  <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px" }}>{subject?.name || "Unknown Subject"}</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: "12px", color: "#cbd5e1" }}>{new Date(rev.revisionDate).toLocaleDateString()}</div>
-                  <div style={{ 
-                    fontSize: "11px", 
-                    marginTop: "4px",
-                    fontWeight: "600",
-                    color: rev.confidenceLevel === "high" ? "#10b981" : rev.confidenceLevel === "medium" ? "#f59e0b" : "#ef4444" 
-                  }}>
-                    {rev.confidenceLevel.toUpperCase()} CONFIDENCE
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="glass-card" style={{ overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+            <thead>
+              <tr style={{ background: "rgba(0,0,0,0.2)" }}>
+                <th style={{ padding: "16px", color: "#94a3b8", fontSize: "12px", textTransform: "uppercase" }}>Subject</th>
+                <th style={{ padding: "16px", color: "#94a3b8", fontSize: "12px", textTransform: "uppercase" }}>Task</th>
+                <th style={{ padding: "16px", color: "#94a3b8", fontSize: "12px", textTransform: "uppercase", textAlign: "center" }}>Studied / Completed</th>
+                <th style={{ padding: "16px", color: "#94a3b8", fontSize: "12px", textTransform: "uppercase", textAlign: "center" }}>Revision Count</th>
+                <th style={{ padding: "16px", color: "#94a3b8", fontSize: "12px", textTransform: "uppercase", textAlign: "right" }}>Last Revision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task) => {
+                const subject = subjects.find(s => s.id === task.subjectId);
+                const taskRevisions = revisions.filter(r => r.taskId === task.id);
+                const sortedRevs = [...taskRevisions].sort((a, b) => new Date(b.revisionDate).getTime() - new Date(a.revisionDate).getTime());
+                const lastRev = sortedRevs[0];
+
+                return (
+                  <tr key={task.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                    <td style={{ padding: "16px", color: "#cbd5e1", fontSize: "14px" }}>
+                      {subject?.name || "Unassigned"}
+                    </td>
+                    <td style={{ padding: "16px", color: "#f8fafc", fontSize: "15px", fontWeight: "500" }}>
+                      {task.title}
+                    </td>
+                    <td style={{ padding: "16px", textAlign: "center" }}>
+                      {task.isCompleted ? (
+                        <span style={{ background: "rgba(16, 185, 129, 0.2)", color: "#34d399", padding: "4px 8px", borderRadius: "12px", fontSize: "12px", fontWeight: "600" }}>✓ Yes</span>
+                      ) : (
+                        <span style={{ background: "rgba(245, 158, 11, 0.2)", color: "#fbbf24", padding: "4px 8px", borderRadius: "12px", fontSize: "12px", fontWeight: "600" }}>Pending</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "16px", textAlign: "center", color: "#38bdf8", fontWeight: "bold" }}>
+                      {taskRevisions.length}
+                    </td>
+                    <td style={{ padding: "16px", textAlign: "right" }}>
+                      {lastRev ? (
+                        <div>
+                          <div style={{ fontSize: "13px", color: "#e2e8f0" }}>{new Date(lastRev.revisionDate).toLocaleDateString()}</div>
+                          <div style={{ 
+                            fontSize: "11px", 
+                            marginTop: "2px",
+                            fontWeight: "600",
+                            color: lastRev.confidenceLevel === "high" ? "#10b981" : lastRev.confidenceLevel === "medium" ? "#f59e0b" : "#ef4444" 
+                          }}>
+                            {lastRev.confidenceLevel.toUpperCase()} CONFIDENCE
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ color: "#64748b", fontSize: "13px" }}>Never revised</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

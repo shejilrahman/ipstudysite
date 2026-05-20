@@ -40,6 +40,7 @@ export async function addTask(
 ): Promise<string> {
   const ref = await addDoc(collection(db, COLLECTION), {
     ...task,
+    subtasks: task.subtasks || [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });

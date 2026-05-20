@@ -21,6 +21,12 @@ export interface Subject {
   updatedAt: string;
 }
 
+export interface SubTask {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 export interface StudyAim {
   id: string;
   title: string;
@@ -37,15 +43,15 @@ export interface StudyTask {
   dueDate: string;
   isCompleted: boolean;
   subjectId?: string;
-  topicId?: string;
+  topicId?: string; // Kept for legacy compatibility if needed
+  subtasks: SubTask[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Revision {
   id: string;
-  topicId: string;
-  subjectId: string;
+  taskId: string;
   revisionDate: string;
   notes?: string;
   confidenceLevel: "low" | "medium" | "high";

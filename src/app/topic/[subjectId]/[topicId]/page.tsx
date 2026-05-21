@@ -19,7 +19,7 @@ export default function TopicKeywordsPage() {
   const [word, setWord] = useState("");
   const [reference, setReference] = useState("");
   const [saving, setSaving] = useState(false);
-  const [tooltip, setTooltip] = useState<{ id: string; x: number; y: number } | null>(null);
+
 
   const topic = subject?.topics.find((t) => t.id === topicId);
 
@@ -194,7 +194,6 @@ export default function TopicKeywordsPage() {
           <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#f1f5f9" }}>
             Keywords ({keywords.length})
           </h2>
-          <span style={{ fontSize: "12px", color: "#64748b" }}>Hover over a keyword to see its reference</span>
         </div>
 
         {keywords.length === 0 ? (
@@ -203,16 +202,16 @@ export default function TopicKeywordsPage() {
             No keywords added yet. Add some keywords to start your revision system!
           </div>
         ) : (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", position: "relative" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
             {keywords.map((kw) => (
               <div
                 key={kw.id}
-                style={{ position: "relative" }}
-                onMouseEnter={(e) => {
-                  const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-                  setTooltip({ id: kw.id, x: rect.left, y: rect.top });
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
-                onMouseLeave={() => setTooltip(null)}
               >
                 {/* Keyword chip */}
                 <div
@@ -226,12 +225,8 @@ export default function TopicKeywordsPage() {
                     border: `1px solid ${subject.color}55`,
                     color: subject.color,
                     fontSize: "14px",
-                    fontWeight: "600",
-                    cursor: "default",
+                    fontWeight: "700",
                     userSelect: "none",
-                    transition: "all 0.15s ease",
-                    boxShadow: tooltip?.id === kw.id ? `0 0 16px ${subject.color}44` : "none",
-                    transform: tooltip?.id === kw.id ? "translateY(-2px)" : "none",
                   }}
                 >
                   {kw.word}
@@ -252,30 +247,17 @@ export default function TopicKeywordsPage() {
                   </button>
                 </div>
 
-                {/* Tooltip */}
-                {tooltip?.id === kw.id && (
-                  <div
-                    style={{
-                      position: "fixed",
-                      left: `${tooltip.x}px`,
-                      top: `${tooltip.y - 48}px`,
-                      background: "rgba(15, 15, 40, 0.97)",
-                      border: `1px solid ${subject.color}66`,
-                      borderRadius: "8px",
-                      padding: "8px 14px",
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      color: "#f1f5f9",
-                      whiteSpace: "nowrap",
-                      zIndex: 9999,
-                      pointerEvents: "none",
-                      boxShadow: `0 4px 20px rgba(0,0,0,0.5), 0 0 12px ${subject.color}33`,
-                      animation: "fadeIn 0.1s ease",
-                    }}
-                  >
-                    📌 {kw.reference}
-                  </div>
-                )}
+                {/* Always-visible reference label */}
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    color: "#64748b",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  📌 {kw.reference}
+                </span>
               </div>
             ))}
           </div>
@@ -295,7 +277,7 @@ export default function TopicKeywordsPage() {
             color: "#6ee7b7",
           }}
         >
-          ✅ <strong>Revision tip:</strong> Just read the keywords above and try to recall the full rule/section in your mind. If you forget a keyword, hover over it to find its reference, then look it up in the book.
+          ✅ <strong>Revision tip:</strong> Read each keyword and try to reconstruct the full rule/section in your mind. The reference below each keyword (e.g. Rule 4) tells you exactly where to look if you need to refresh your memory.
         </div>
       )}
     </div>

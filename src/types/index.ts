@@ -5,6 +5,15 @@ export interface Topic {
   notes?: string;
 }
 
+export interface Keyword {
+  id: string;
+  topicId: string;
+  subjectId: string;
+  word: string;
+  reference: string; // e.g. "Rule 4", "Section 12(a)"
+  createdAt: string;
+}
+
 export interface Subject {
   id: string;
   name: string;

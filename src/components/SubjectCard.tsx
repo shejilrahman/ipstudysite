@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Subject } from "@/types";
 
 interface SubjectCardProps {
@@ -58,6 +59,8 @@ export default function SubjectCard({
   onDelete,
   animationDelay = 0,
 }: SubjectCardProps) {
+  const router = useRouter();
+  const [showAllTopics, setShowAllTopics] = useState(false);
   const completedTopics = subject.topics.filter(
     (t) => t.status === "completed"
   ).length;
@@ -329,14 +332,24 @@ export default function SubjectCard({
         </div>
       </div>
 
-      {/* Topics mini list (top 3) */}
+      {/* Topics list - show all with keyboard links */}
       {subject.topics.length > 0 && (
         <div style={{ marginBottom: "16px" }}>
-          <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "6px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Key Topics
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+            <div style={{ fontSize: "11px", color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Key Topics ({subject.topics.length})
+            </div>
+            {subject.topics.length > 3 && (
+              <button
+                onClick={() => setShowAllTopics((p) => !p)}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "11px", color: "#6366f1", fontWeight: "600" }}
+              >
+                {showAllTopics ? "▲ Show less" : `▼ +${subject.topics.length - 3} more`}
+              </button>
+            )}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            {subject.topics.slice(0, 3).map((topic) => (
+            {(showAllTopics ? subject.topics : subject.topics.slice(0, 3)).map((topic) => (
               <div
                 key={topic.id}
                 style={{
@@ -344,25 +357,32 @@ export default function SubjectCard({
                   alignItems: "center",
                   gap: "8px",
                   fontSize: "12px",
-                  color: topic.status === "completed" ? "#34d399" : topic.status === "in_progress" ? "#fbbf24" : "#64748b",
+                  padding: "5px 8px",
+                  borderRadius: "6px",
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.04)",
+                  cursor: "pointer",
+                  transition: "background 0.15s ease",
                 }}
+                onClick={() => router.push(`/topic/${subject.id}/${topic.id}`)}
+                title={`Click to open keyword revision for: ${topic.name}`}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
               >
-                <span style={{ fontSize: "10px" }}>
+                <span style={{ fontSize: "10px", flexShrink: 0, color: topic.status === "completed" ? "#10b981" : topic.status === "in_progress" ? "#fbbf24" : "#64748b" }}>
                   {topic.status === "completed" ? "✓" : topic.status === "in_progress" ? "◎" : "○"}
                 </span>
-                <span style={{ 
+                <span style={{
+                  flex: 1,
+                  color: topic.status === "completed" ? "#34d399" : topic.status === "in_progress" ? "#fbbf24" : "#94a3b8",
                   textDecoration: topic.status === "completed" ? "line-through" : "none",
                   opacity: topic.status === "completed" ? 0.7 : 1,
                 }}>
                   {topic.name}
                 </span>
+                <span style={{ fontSize: "10px", color: "#6366f1", fontWeight: "600", flexShrink: 0 }}>🔑</span>
               </div>
             ))}
-            {subject.topics.length > 3 && (
-              <div style={{ fontSize: "11px", color: "#475569" }}>
-                +{subject.topics.length - 3} more topics
-              </div>
-            )}
           </div>
         </div>
       )}
